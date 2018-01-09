@@ -29,12 +29,8 @@
 
 package org.firstinspires.ftc.team9351;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
@@ -50,13 +46,15 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Pushbot: Teleop POV", group="Pushbot")
+@TeleOp(name="Pushbot: Teleop POV2HWS", group="Pushbot")
 //@Disabled
-public class PushbotTeleopPOV_Linear extends LinearOpMode {
+public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareOmni hws          = new HardwareOmni();   // Use a Pushbot's hardware
                                                                // could also use HardwarePushbotMatrix class.
+    HardwareCosas hwCos = new HardwareCosas();
+
     @Override
     public void runOpMode() {
         double left;
@@ -68,6 +66,7 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         hws.init(hardwareMap);
+        hwCos.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -83,6 +82,33 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
             // This way it's also easy to just drive straight, or just turn.
             double turbo = 0;
+
+            int cero = 0;
+            int cienochenta = 180;
+
+            if (gamepad1.x){
+                hwCos.sliderHolder.setPosition(cero);
+            } else if (gamepad1.b){
+                hwCos.sliderHolder.setPosition(180);
+            }
+
+            if (gamepad1.y){
+                hwCos.relicHold.setPosition(0);
+            } else if (gamepad1.a){
+                hwCos.relicHold.setPosition(180);
+            }
+
+            if (gamepad2.x){
+                hwCos.relicMov.setPosition(0);
+            } else if (gamepad2.b){
+                hwCos.relicMov.setPosition(180);
+            }
+
+            double sliderHolderPosition = hwCos.sliderHolder.getPosition();
+            double relicHoldPosition = hwCos.relicHold.getPosition();
+            double relicMovementPosition = hwCos.relicMov.getPosition();
+
+
             if (gamepad1.right_bumper)
             {
                 hws.turbo = 1;
@@ -95,7 +121,6 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
 
                 turbo = 1;
             }
-
             telemetry.addData("velocidad", turbo);
             // Sets the joystick values to variables for better math understanding
             // The Y axis goes
@@ -105,8 +130,6 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             double y1 = gamepad1.left_stick_y;
             double x1 = gamepad1.left_stick_x;
             double x2 = gamepad1.right_stick_x;
-
-
 
             // sets the math necessary to control the motors to variables
             // The left stick controls the axial movement
@@ -122,12 +145,10 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             double backLeftPower    = y1 - x2 - x1;
 
             // Normalize the values so neither exceed +/- 1.0
-
             hws.max = Math.max(Math.abs(hws.frontRightPower), Math.max(Math.abs(hws.backRightPower),
                     Math.max(Math.abs(hws.frontLeftPower), Math.abs(hws.backLeftPower))));
             double max = Math.max(Math.abs(frontRightPower), Math.max(Math.abs(backRightPower),
                     Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower))));
-//
             if (hws.max > 1.0)
             {
                 hws.frontRightPower /= hws.max;
@@ -154,7 +175,6 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             frontLeftPower  *= turbo;
             backLeftPower   *= turbo;
 
-//
             hws.frontRightDrive.setPower(hws.frontRightPower);
             hws.backRightDrive.setPower(hws.backRightPower);
             hws.frontLeftDrive.setPower(hws.frontLeftPower);
@@ -163,9 +183,12 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             telemetry.addData("back right:", backRightPower);
             telemetry.addData("front left:", frontLeftPower);
             telemetry.addData("back left:", backLeftPower);
+            telemetry.addData("Slider Holder: ", sliderHolderPosition);
+            telemetry.addData("Relic Holder: ", relicHoldPosition);    //
+            telemetry.addData("Relic Movement: ", relicMovementPosition);    //
+//
 
             // Send telemetry message to signify robot running;
-
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
