@@ -87,26 +87,36 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             int cienochenta = 180;
 
             if (gamepad1.x){
-                hwCos.sliderHolder.setPosition(cero);
+                hwCos.sliderHolder.setPosition(.1);
             } else if (gamepad1.b){
-                hwCos.sliderHolder.setPosition(180);
+                hwCos.sliderHolder.setPosition(.6);
             }
 
             if (gamepad1.y){
                 hwCos.relicHold.setPosition(0);
             } else if (gamepad1.a){
-                hwCos.relicHold.setPosition(180);
+                hwCos.relicHold.setPosition(.5);
             }
 
             if (gamepad2.x){
                 hwCos.relicMov.setPosition(0);
             } else if (gamepad2.b){
-                hwCos.relicMov.setPosition(180);
+                hwCos.relicMov.setPosition(.5);
+            }
+
+            if(gamepad1.right_bumper){
+                hwCos.leftArm.setPosition(.3);
+                hwCos.rightArm.setPosition(.7);
+            } else if (gamepad1.left_bumper){
+                hwCos.leftArm.setPosition(0);
+                hwCos.rightArm.setPosition(0);
             }
 
             double sliderHolderPosition = hwCos.sliderHolder.getPosition();
             double relicHoldPosition = hwCos.relicHold.getPosition();
             double relicMovementPosition = hwCos.relicMov.getPosition();
+            double rightArmPosition = hwCos.rightArm.getPosition();
+            double leftArmPosition = hwCos.leftArm.getPosition();
 
 
             if (gamepad1.right_bumper)
@@ -183,9 +193,13 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             telemetry.addData("back right:", backRightPower);
             telemetry.addData("front left:", frontLeftPower);
             telemetry.addData("back left:", backLeftPower);
-            telemetry.addData("Slider Holder: ", sliderHolderPosition);
-            telemetry.addData("Relic Holder: ", relicHoldPosition);    //
-            telemetry.addData("Relic Movement: ", relicMovementPosition);    //
+            //telemetry.addData("Slider Holder: ", sliderHolderPosition);
+            //telemetry.addData("Relic Holder: ", relicHoldPosition);    //
+            //telemetry.addData("Relic Movement: ", relicMovementPosition);    //
+
+            telemetry.addData("Right Arm: ", rightArmPosition);    //
+            telemetry.addData("Left Arm: ", leftArmPosition);    //
+
 //
 
             // Send telemetry message to signify robot running;

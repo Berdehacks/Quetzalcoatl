@@ -95,18 +95,18 @@ public class HardwareCosas {
         paracord.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         jewel = hwMap.get(Servo.class, "JW");
-        //rightArm = hwMap.get(Servo.class, "RA");
-        //leftArm = hwMap.get(Servo.class, "LA");
+        rightArm = hwMap.get(Servo.class, "RA");
+        leftArm = hwMap.get(Servo.class, "LA");
         sliderHolder = hwMap.get(Servo.class, "SH");
         relicMov = hwMap.get(Servo.class, "RM");
         relicHold = hwMap.get(Servo.class, "RH");
 
-        jewel.setPosition(MID_SERVO);
-       // rightArm.setPosition(MID_SERVO);
-        //leftArm.setPosition(MID_SERVO);
-        sliderHolder.setPosition(MID_SERVO);
-        relicMov.setPosition(MID_SERVO);
-        relicHold.setPosition(MID_SERVO);
+        jewel.setPosition(0.5);
+        rightArm.setPosition(0);
+        leftArm.setPosition(1);
+        sliderHolder.setPosition(0.6);
+        relicMov.setPosition(0);
+        relicHold.setPosition(0);
     }
 }
 
