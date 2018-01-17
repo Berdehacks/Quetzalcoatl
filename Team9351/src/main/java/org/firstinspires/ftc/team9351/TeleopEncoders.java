@@ -31,6 +31,7 @@ package org.firstinspires.ftc.team9351;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
@@ -46,14 +47,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Pushbot: Teleop POV2HWS", group="Pushbot")
+@TeleOp(name="Pushbot: Teleop Encoders", group="Pushbot")
 //@Disabled
-public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
+public class TeleopEncoders extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareOmni hws          = new HardwareOmni();   // Use a Pushbot's hardware
                                                                // could also use HardwarePushbotMatrix class.
-    HardwareCosas hwCos = new HardwareCosas();
+    HardwareCosasEncoders hwCosEnc = new HardwareCosasEncoders();
 
     @Override
     public void runOpMode() {
@@ -66,7 +67,7 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         hws.init(hardwareMap);
-        hwCos.init(hardwareMap);
+        hwCosEnc.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -87,51 +88,13 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             int cienochenta = 180;
 
             if (gamepad1.x){
-                hwCos.elevadorCubos.setPower(.5);
+                hwCosEnc.elevadorCubos.setTargetPosition((int) hwCosEnc.COUNTS);
+                hwCosEnc.elevadorCubos.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                hwCosEnc.elevadorCubos.setPower(.5);
             } else if (gamepad1.b){
-                hwCos.elevadorCubos.setPower(-.5);
-            } else {
-                hwCos.elevadorCubos.setPower(0);
-            }
-
-            if (gamepad1.y){
-                hwCos.paracord.setPower(.5);
-            } else if (gamepad1.a){
-                hwCos.paracord.setPower(-.5);
-            } else {
-                hwCos.paracord.setPower(0);
-            }
-
-            if (gamepad1.right_bumper){
-                hwCos.jewel.setPosition(0);
-            } else if (gamepad1.left_bumper){
-                hwCos.jewel.setPosition(1);
-            }
-
-            if (gamepad2.x){
-                hwCos.rightArm.setPosition(0);
-                hwCos.leftArm.setPosition(1);
-            } else if (gamepad2.b){
-                hwCos.rightArm.setPosition(1);
-                hwCos.leftArm.setPosition(0);
-            }
-
-            if (gamepad2.y){
-                hwCos.sliderHolder.setPosition(0);
-            } else if (gamepad2.a){
-                hwCos.sliderHolder.setPosition(1);
-            }
-
-            if (gamepad2.right_bumper){
-                hwCos.relicMov.setPosition(0);
-            } else if (gamepad2.left_bumper){
-                hwCos.relicMov.setPosition(1);
-            }
-
-            if (gamepad2.right_stick_button){
-                hwCos.relicHold.setPosition(0);
-            } else if (gamepad2.left_stick_button){
-                hwCos.relicHold.setPosition(1);
+                hwCosEnc.elevadorCubos.setTargetPosition((int) hwCosEnc.COUNTS);
+                hwCosEnc.elevadorCubos.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                hwCosEnc.elevadorCubos.setPower(-.5);
             }
 
 

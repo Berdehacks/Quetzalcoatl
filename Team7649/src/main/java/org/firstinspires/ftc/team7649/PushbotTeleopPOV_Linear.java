@@ -31,6 +31,7 @@ package org.firstinspires.ftc.team7649;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
@@ -51,21 +52,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class PushbotTeleopPOV_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareOmni hws           = new HardwareOmni();   // Use a Pushbot's hardware
+    HardwareOmni hws          = new HardwareOmni();   // Use a Pushbot's hardware
+    HardwareCosas hwCosas = new HardwareCosas();
                                                                // could also use HardwarePushbotMatrix class.
-
     @Override
     public void runOpMode() {
         double left;
         double right;
         double drive;
         double turn;
-        double max;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         hws.init(hardwareMap);
+        hwCosas.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -80,57 +81,142 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
             // This way it's also easy to just drive straight, or just turn.
+            double turbo = 0;
+
+            if (gamepad1.y){
+                hwCosas.elevadorIzquierdo.setPower(1);
+                hwCosas.elevadorDerecho.setPower(1);
+            } else if (gamepad1.a){
+                hwCosas.elevadorIzquierdo.setPower(-1);
+                hwCosas.elevadorDerecho.setPower(-1);
+            } else {
+                hwCosas.elevadorIzquierdo.setPower(0);
+                hwCosas.elevadorDerecho.setPower(0);
+            }
+
+            if (gamepad1.x){
+                hwCosas.brazoIzquierdo.setPosition(.3);
+                hwCosas.brazoDerecho.setPosition(0.7);
+            } else if (gamepad1.b){
+                hwCosas.brazoIzquierdo.setPosition(1);
+                hwCosas.brazoDerecho.setPosition(0);
+            }
+
+            if (gamepad1.right_bumper){
+                hwCosas.elevadorReliquia.setPower(1);
+            } else if (gamepad1.left_bumper) {
+                hwCosas.elevadorReliquia.setPower(-1);
+            } else {
+                hwCosas.elevadorReliquia.setPower(0);
+            }
+
+            if (gamepad2.y){
+                hwCosas.brazo.setPower(1);
+            } else if (gamepad2.a){
+                hwCosas.brazo.setPower(-1);
+            } else {
+                hwCosas.brazo.setPower(0);
+            }
+
+            if (gamepad2.x) {
+                hwCosas.garra.setPosition(0);
+            } else if (gamepad2.b) {
+                hwCosas.garra.setPosition(1);
+            }
+
+            if (gamepad2.right_bumper){
+                hwCosas.puerta.setPosition(0);
+            } else if (gamepad2.left_bumper){
+                hwCosas.puerta.setPosition(1);
+            }
+
             if (gamepad1.right_bumper)
             {
                 hws.turbo = 1;
+                turbo = 1;
             }
+
             else
+            {
                 hws.turbo = 1;
+
+                turbo = 1;
+            }
+
+            telemetry.addData("velocidad", turbo);
             // Sets the joystick values to variables for better math understanding
             // The Y axis goes
-            hws.y1  = -gamepad1.left_stick_y;
-            hws.x1  = gamepad1.left_stick_x;
-            hws.x2  = gamepad1.right_stick_x;
+            hws.y1 = gamepad1.left_stick_y;
+            hws.x1 = gamepad1.left_stick_x;
+            hws.x2 = gamepad1.right_stick_x;
+            double y1 = gamepad1.left_stick_y;
+            double x1 = gamepad1.left_stick_x;
+            double x2 = gamepad1.right_stick_x;
+
+
 
             // sets the math necessary to control the motors to variables
             // The left stick controls the axial movement
             // The right sick controls the rotation
-            hws.frontRightPower     = hws.y1 - hws.x2 - hws.x1;
-            hws.backRightPower      = hws.y1 - hws.x2 + hws.x1;
-            hws.frontLeftPower      = hws.y1 + hws.x2 + hws.x1;
-            hws.backLeftPower       = hws.y1 + hws.x2 - hws.x1;
+
+            hws.frontRightPower = hws.y1 - hws.x2 - hws.x1;
+            hws.backRightPower = hws.y1 - hws.x2 + hws.x1;
+            hws.frontLeftPower = hws.y1 + hws.x2 + hws.x1;
+            hws.backLeftPower = hws.y1 + hws.x2 - hws.x1;
+            double frontRightPower  = y1 + x2 - x1;
+            double backRightPower   = y1 + x2 + x1;
+            double frontLeftPower   = y1 - x2 + x1;
+            double backLeftPower    = y1 - x2 - x1;
 
             // Normalize the values so neither exceed +/- 1.0
-            hws.max =  Math.max(Math.abs(hws.frontRightPower), Math.max(Math.abs(hws.backRightPower),
+
+            hws.max = Math.max(Math.abs(hws.frontRightPower), Math.max(Math.abs(hws.backRightPower),
                     Math.max(Math.abs(hws.frontLeftPower), Math.abs(hws.backLeftPower))));
+            double max = Math.max(Math.abs(frontRightPower), Math.max(Math.abs(backRightPower),
+                    Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower))));
+//
             if (hws.max > 1.0)
             {
-                hws.frontRightPower     /= hws.max;
-                hws.backRightPower      /= hws.max;
-                hws.frontLeftPower      /= hws.max;
-                hws.backLeftPower       /= hws.max;
+                hws.frontRightPower /= hws.max;
+                hws.backRightPower /= hws.max;
+                hws.frontLeftPower /= hws.max;
+                hws.backLeftPower /= hws.max;
+            }
+            if (max > 1.0)
+            {
+                frontRightPower /= max;
+                backRightPower  /= max;
+                frontLeftPower  /= max;
+                backLeftPower   /= max;
             }
 
             // sets the speed for the motros with the turbo multiplier
-            hws.frontRightPower     *= hws.turbo;
-            hws.backRightPower      *= hws.turbo;
-            hws.frontLeftPower      *= hws.turbo;
-            hws.backLeftPower       *= hws.turbo;
+//
+            hws.frontRightPower *= hws.turbo;
+            hws.backRightPower *= hws.turbo;
+            hws.frontLeftPower *= hws.turbo;
+            hws.backLeftPower *= hws.turbo;
+            frontRightPower *= turbo;
+            backRightPower  *= turbo;
+            frontLeftPower  *= turbo;
+            backLeftPower   *= turbo;
 
+//
             hws.frontRightDrive.setPower(hws.frontRightPower);
             hws.backRightDrive.setPower(hws.backRightPower);
             hws.frontLeftDrive.setPower(hws.frontLeftPower);
             hws.backLeftDrive.setPower(hws.backLeftPower);
-
-            left=hws.frontLeftPower;
-            right=hws.backRightPower;
+            telemetry.addData("front right:", frontRightPower);
+            telemetry.addData("back right:", backRightPower);
+            telemetry.addData("front left:", frontLeftPower);
+            telemetry.addData("back left:", backLeftPower);
 
             // Send telemetry message to signify robot running;
-            telemetry.addData("left",  "%.2f", left);
-            telemetry.addData("right", "%.2f", right);
+
             telemetry.update();
 
-            // Pace this loop so jaw action is reasonable speed.
+            // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
+
             sleep(50);
         }
     }

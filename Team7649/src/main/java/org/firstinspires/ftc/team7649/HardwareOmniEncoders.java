@@ -49,7 +49,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Servo channel:  Servo to open left claw:  "left_hand"
  * Servo channel:  Servo to open right claw: "right_hand"
  */
-public class HardwareOmni {
+public class HardwareOmniEncoders {
     /* Public OpMode members. */
     public DcMotor frontLeftDrive = null;
     public DcMotor frontRightDrive = null;
@@ -71,7 +71,7 @@ public class HardwareOmni {
     private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
-    public HardwareOmni() {
+    public HardwareOmniEncoders() {
     }
 
     /* Initialize standard Hardware interfaces */
@@ -98,10 +98,10 @@ public class HardwareOmni {
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
 

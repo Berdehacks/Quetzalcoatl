@@ -30,8 +30,12 @@
 package org.firstinspires.ftc.team7649;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.io.BufferedReader;
 
 /**
  * This is NOT an opmode.
@@ -49,29 +53,27 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Servo channel:  Servo to open left claw:  "left_hand"
  * Servo channel:  Servo to open right claw: "right_hand"
  */
-public class HardwareOmni {
+public class HardwareCosas {
     /* Public OpMode members. */
-    public DcMotor frontLeftDrive = null;
-    public DcMotor frontRightDrive = null;
-    public DcMotor backLeftDrive = null;
-    public DcMotor backRightDrive = null;
+    public DcMotor elevadorDerecho = null;
+    public DcMotor elevadorIzquierdo = null;
+    public DcMotor elevadorReliquia = null;
+    public DcMotor brazo = null;
+    public Servo brazoDerecho = null;
+    public Servo brazoIzquierdo = null;
+    public Servo garra = null;
+    public Servo puerta = null;
 
-    public double y1;
-    public double x1;
-    public double x2;
-    public double frontRightPower;
-    public double backRightPower;
-    public double frontLeftPower;
-    public double backLeftPower;
-    public double max;
-    public double turbo;
+    public static final double MID_SERVO       =  0.5 ;
+    public static final double ARM_UP_POWER    =  0.45 ;
+    public static final double ARM_DOWN_POWER  = -0.45 ;
 
     /* local OpMode members. */
     HardwareMap hwMap = null;
     private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
-    public HardwareOmni() {
+    public HardwareCosas() {
     }
 
     /* Initialize standard Hardware interfaces */
@@ -80,28 +82,40 @@ public class HardwareOmni {
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        frontLeftDrive = hwMap.get(DcMotor.class, "FL");
-        frontRightDrive = hwMap.get(DcMotor.class, "FR");
-        backLeftDrive = hwMap.get(DcMotor.class, "BL");
-        backRightDrive = hwMap.get(DcMotor.class, "BR");
+        elevadorDerecho = hwMap.get(DcMotor.class, "ED");
+        elevadorIzquierdo = hwMap.get(DcMotor.class, "EI");
+        elevadorReliquia = hwMap.get(DcMotor.class, "ER");
+        brazo = hwMap.get(DcMotor.class, "B");
 
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        elevadorDerecho.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        elevadorIzquierdo.setDirection(DcMotor.Direction.FORWARD);
+        elevadorReliquia.setDirection(DcMotor.Direction.FORWARD);
+        brazo.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
-        frontLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        backRightDrive.setPower(0);
+        elevadorDerecho.setPower(0);
+        elevadorIzquierdo.setPower(0);
+        elevadorReliquia.setPower(0);
+        brazo.setPower(0);
+
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevadorDerecho.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevadorIzquierdo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevadorReliquia.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        brazo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+        brazoDerecho = hwMap.get(Servo.class, "BD");
+        brazoIzquierdo = hwMap.get(Servo.class, "BI");
+        garra = hwMap.get(Servo.class, "G");
+        puerta = hwMap.get(Servo.class, "P");
+
+        brazoIzquierdo.setPosition(0);
+        brazoDerecho.setPosition(1);
+        garra.setPosition(0);
+        puerta.setPosition(1);
     }
 }
 
