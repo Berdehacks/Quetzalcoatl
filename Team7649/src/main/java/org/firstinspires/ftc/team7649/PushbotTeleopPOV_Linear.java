@@ -95,38 +95,34 @@ public class PushbotTeleopPOV_Linear extends LinearOpMode {
             }
 
             if (gamepad1.x){
-                hwCosas.brazoIzquierdo.setPosition(.3);
-                hwCosas.brazoDerecho.setPosition(0.7);
+                hwCosas.brazoIzquierdo.setPosition(0);
+                hwCosas.brazoDerecho.setPosition(1);
             } else if (gamepad1.b){
                 hwCosas.brazoIzquierdo.setPosition(1);
                 hwCosas.brazoDerecho.setPosition(0);
             }
 
-            if (gamepad1.right_bumper){
-                hwCosas.elevadorReliquia.setPower(1);
-            } else if (gamepad1.left_bumper) {
-                hwCosas.elevadorReliquia.setPower(-1);
-            } else {
-                hwCosas.elevadorReliquia.setPower(0);
-            }
+            float elevadorReliquiaPower = gamepad2.left_stick_y;
 
-            if (gamepad2.y){
+            hwCosas.elevadorReliquia.setPower(elevadorReliquiaPower);
+
+            if (gamepad2.x){
                 hwCosas.brazo.setPower(1);
-            } else if (gamepad2.a){
+            } else if (gamepad2.b){
                 hwCosas.brazo.setPower(-1);
             } else {
                 hwCosas.brazo.setPower(0);
             }
 
-            if (gamepad2.x) {
+            if (gamepad2.y) {
                 hwCosas.garra.setPosition(0);
-            } else if (gamepad2.b) {
+            } else if (gamepad2.a) {
                 hwCosas.garra.setPosition(1);
             }
 
-            if (gamepad2.right_bumper){
+            if (gamepad1.right_bumper){
                 hwCosas.puerta.setPosition(0);
-            } else if (gamepad2.left_bumper){
+            } else if (gamepad1.left_bumper){
                 hwCosas.puerta.setPosition(1);
             }
 

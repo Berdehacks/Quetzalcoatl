@@ -109,11 +109,11 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             }
 
             if (gamepad2.x){
-                hwCos.rightArm.setPosition(0);
-                hwCos.leftArm.setPosition(1);
-            } else if (gamepad2.b){
                 hwCos.rightArm.setPosition(1);
                 hwCos.leftArm.setPosition(0);
+            } else if (gamepad2.b){
+                hwCos.rightArm.setPosition(.27);
+                hwCos.leftArm.setPosition(.72);
             }
 
             if (gamepad2.y){

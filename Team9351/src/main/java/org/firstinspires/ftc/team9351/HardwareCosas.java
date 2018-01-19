@@ -101,10 +101,10 @@ public class HardwareCosas {
         relicMov = hwMap.get(Servo.class, "RM");
         relicHold = hwMap.get(Servo.class, "RH");
 
-        jewel.setPosition(0.5);
+        jewel.setPosition(1);
         rightArm.setPosition(0);
         leftArm.setPosition(1);
-        sliderHolder.setPosition(0.6);
+        sliderHolder.setPosition(1);
         relicMov.setPosition(0);
         relicHold.setPosition(0);
     }
