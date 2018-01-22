@@ -27,10 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.team7649;
+package org.firstinspires.ftc.team9351;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -49,29 +50,24 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Servo channel:  Servo to open left claw:  "left_hand"
  * Servo channel:  Servo to open right claw: "right_hand"
  */
-public class HardwareOmniEncoders {
+public class HardwareCosasCubos {
     /* Public OpMode members. */
-    public DcMotor frontLeftDrive = null;
-    public DcMotor frontRightDrive = null;
-    public DcMotor backLeftDrive = null;
-    public DcMotor backRightDrive = null;
+    public DcMotor elevadorCubos = null;
+    public Servo jewel = null;
+    public Servo rightArm = null;
+    public Servo leftArm = null;
 
-    public double y1;
-    public double x1;
-    public double x2;
-    public double frontRightPower;
-    public double backRightPower;
-    public double frontLeftPower;
-    public double backLeftPower;
-    public double max;
-    public double turbo;
+
+    public static final double MID_SERVO       =  0.5 ;
+    public static final double ARM_UP_POWER    =  0.45 ;
+    public static final double ARM_DOWN_POWER  = -0.45 ;
 
     /* local OpMode members. */
     HardwareMap hwMap = null;
     private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
-    public HardwareOmniEncoders() {
+    public HardwareCosasCubos() {
     }
 
     /* Initialize standard Hardware interfaces */
@@ -80,28 +76,25 @@ public class HardwareOmniEncoders {
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        frontLeftDrive = hwMap.get(DcMotor.class, "FL");
-        frontRightDrive = hwMap.get(DcMotor.class, "FR");
-        backLeftDrive = hwMap.get(DcMotor.class, "BL");
-        backRightDrive = hwMap.get(DcMotor.class, "BR");
+        elevadorCubos = hwMap.get(DcMotor.class, "CE");
 
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        elevadorCubos.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
 
         // Set all motors to zero power
-        frontLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        backRightDrive.setPower(0);
+        elevadorCubos.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevadorCubos.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        jewel = hwMap.get(Servo.class, "JW");
+        rightArm = hwMap.get(Servo.class, "RA");
+        leftArm = hwMap.get(Servo.class, "LA");
+
+        jewel.setPosition(1);
+        rightArm.setPosition(0);
+        leftArm.setPosition(1);
+
     }
 }
 

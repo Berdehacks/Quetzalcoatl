@@ -105,7 +105,7 @@ public class HardwareCosas {
         rightArm.setPosition(0);
         leftArm.setPosition(1);
         sliderHolder.setPosition(1);
-        relicMov.setPosition(0);
+        relicMov.setPosition(1);
         relicHold.setPosition(0);
     }
 }

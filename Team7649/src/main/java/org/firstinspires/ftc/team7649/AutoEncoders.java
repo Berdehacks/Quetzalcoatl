@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
@@ -64,12 +65,13 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Auto Encoder", group="Pushbot")
+@Autonomous(name="DejarCubos", group="Pushbot")
 //@Disabled
 public class AutoEncoders extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareOmni         robot   = new HardwareOmni();   // Use a Pushbot's hardware
+    HardwareCosas cosas = new HardwareCosas();
     private ElapsedTime     runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: Andymark Motor Encoder
@@ -80,6 +82,7 @@ public class AutoEncoders extends LinearOpMode {
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
+
     @Override
     public void runOpMode() {
 
@@ -88,6 +91,7 @@ public class AutoEncoders extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        cosas.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -97,18 +101,22 @@ public class AutoEncoders extends LinearOpMode {
         robot.frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        cosas.elevadorDerecho.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        cosas.elevadorIzquierdo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        cosas.elevadorIzquierdo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        cosas.elevadorDerecho.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at FL:%7d FR:%7d BL:%7d BR:%7d",
-                          robot.frontLeftDrive.getCurrentPosition(),
-                          robot.frontRightDrive.getCurrentPosition(),
-                        robot.backLeftDrive.getCurrentPosition(),
-                        robot.backRightDrive.getCurrentPosition());
+        telemetry.addData("Path0", "Starting at FL:%7d FR:%7d BL:%7d BR:%7d",
+                robot.frontLeftDrive.getCurrentPosition(),
+                robot.frontRightDrive.getCurrentPosition(),
+                robot.backLeftDrive.getCurrentPosition(),
+                robot.backRightDrive.getCurrentPosition());
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -116,7 +124,16 @@ public class AutoEncoders extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  48,  -48, 48, -48, 10.0 );  // S1: Forward 47 Inches with 5 Sec timeout
+
+        servos(0, 1);
+        encoderElevadores(DRIVE_SPEED, 2, 2, 1.0);
+        encoderDrive(DRIVE_SPEED, 37, 37, -37, -37, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED, 16, -16, -16, -16, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED, 20, 20, -20, -20, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderElevadores(DRIVE_SPEED, -2, -2, 1.0);
+        servos(1, 0);
+        encoderDrive(DRIVE_SPEED, 2, 2, -2, -2, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -130,6 +147,50 @@ public class AutoEncoders extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
+    public void servos (int izquierdo, int derecho){
+        cosas.brazoIzquierdo.setPosition(izquierdo);
+        cosas.brazoDerecho.setPosition(derecho);
+    }
+    public void encoderElevadores (double speed, int leftInches, int rightInches, double timeoutS){
+        int newLeftTarjet;
+        int newRightTarjet;
+
+        if (opModeIsActive()){
+            newLeftTarjet = cosas.elevadorIzquierdo.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
+            newRightTarjet = cosas.elevadorDerecho.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
+
+            cosas.elevadorIzquierdo.setTargetPosition(newLeftTarjet);
+            cosas.elevadorDerecho.setTargetPosition(newRightTarjet);
+
+            cosas.elevadorIzquierdo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            cosas.elevadorDerecho.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            cosas.elevadorIzquierdo.setPower(Math.abs(speed));
+            cosas.elevadorDerecho.setPower(Math.abs(speed));
+
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (cosas.elevadorDerecho.isBusy() && cosas.elevadorIzquierdo.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to L:%7d R:%7d", newLeftTarjet,  newRightTarjet);
+                telemetry.addData("Path2",  "Running at L:%7d R:%7d",
+                        cosas.elevadorIzquierdo.getCurrentPosition(),
+                        cosas.elevadorDerecho.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            cosas.elevadorDerecho.setPower(0);
+            cosas.elevadorIzquierdo.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            cosas.elevadorDerecho.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            cosas.elevadorIzquierdo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //  sleep(250);   // optional pause after each move
+        }
+    }
     public void encoderDrive(double speed,
                              double frontLeftInches, double frontRightInches,
                              double backLeftInches, double backRightInches,

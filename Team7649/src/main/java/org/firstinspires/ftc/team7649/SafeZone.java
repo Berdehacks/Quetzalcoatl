@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.team9351;
+package org.firstinspires.ftc.team7649;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -61,12 +61,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Auto Encoder", group="Pushbot")
+@Autonomous(name="Safe Zone", group="Pushbot")
 //@Disabled
-public class AutoEncoders extends LinearOpMode {
+public class SafeZone extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareOmni         robot   = new HardwareOmni();   // Use a Pushbot's hardware
+    HardwareCosas cosas = new HardwareCosas();
     private ElapsedTime     runtime = new ElapsedTime();
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: Andymark Motor Encoder
@@ -74,8 +75,9 @@ public class AutoEncoders extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
+    static final double     DRIVE_SPEED             = 0.4;
     static final double     TURN_SPEED              = 0.5;
+
 
     @Override
     public void runOpMode() {
@@ -113,9 +115,10 @@ public class AutoEncoders extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  36,  36, 36, 36, 5.0 );  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(DRIVE_SPEED,  16,  -16, -16, 16, 5.0 );  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(DRIVE_SPEED,  2,  2, 2, 2, 5.0 );  // S1: Forward 47 Inches with 5 Sec timeout
+
+        encoderDrive(DRIVE_SPEED,  37,  37, -37, -37, 5.0 );  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED,  16,  -16, -16, -16, 5.0 );  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED,  10,  10, -10, -10, 5.0 );  // S1: Forward 47 Inches with 5 Sec timeout
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -129,6 +132,15 @@ public class AutoEncoders extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
+    public void servos (int izquierdo, int derecho){
+        cosas.brazoIzquierdo.setPosition(izquierdo);
+        cosas.brazoDerecho.setPosition(derecho);
+    }
+    public void elevadores (int izquierdo, int derecho, double timeoutS){
+        cosas.elevadorIzquierdo.setPower(izquierdo);
+        cosas.elevadorDerecho.setPower(derecho);
+        sleep(50);
+    }
     public void encoderDrive(double speed,
                              double frontLeftInches, double frontRightInches,
                              double backLeftInches, double backRightInches,

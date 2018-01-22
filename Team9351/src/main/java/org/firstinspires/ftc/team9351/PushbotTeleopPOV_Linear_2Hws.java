@@ -51,9 +51,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareOmni hws          = new HardwareOmni();   // Use a Pushbot's hardware
-                                                               // could also use HardwarePushbotMatrix class.
-    HardwareCosas hwCos = new HardwareCosas();
+    HardwareOmni hws          = new HardwareOmni();   // Use a Pushbot's hardware// could also use HardwarePushbotMatrix class.
+    HardwareCosasCubos hwCos = new HardwareCosasCubos();
 
     @Override
     public void runOpMode() {
@@ -86,20 +85,15 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             int cero = 0;
             int cienochenta = 180;
 
+            hwCos.rightArm.setPosition(.5);
+            hwCos.leftArm.setPosition(.5);
+
             if (gamepad1.x){
                 hwCos.elevadorCubos.setPower(.5);
             } else if (gamepad1.b){
                 hwCos.elevadorCubos.setPower(-.5);
             } else {
                 hwCos.elevadorCubos.setPower(0);
-            }
-
-            if (gamepad1.y){
-                hwCos.paracord.setPower(.5);
-            } else if (gamepad1.a){
-                hwCos.paracord.setPower(-.5);
-            } else {
-                hwCos.paracord.setPower(0);
             }
 
             if (gamepad1.right_bumper){
@@ -114,24 +108,6 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             } else if (gamepad2.b){
                 hwCos.rightArm.setPosition(.27);
                 hwCos.leftArm.setPosition(.72);
-            }
-
-            if (gamepad2.y){
-                hwCos.sliderHolder.setPosition(0);
-            } else if (gamepad2.a){
-                hwCos.sliderHolder.setPosition(1);
-            }
-
-            if (gamepad2.right_bumper){
-                hwCos.relicMov.setPosition(0);
-            } else if (gamepad2.left_bumper){
-                hwCos.relicMov.setPosition(1);
-            }
-
-            if (gamepad2.right_stick_button){
-                hwCos.relicHold.setPosition(0);
-            } else if (gamepad2.left_stick_button){
-                hwCos.relicHold.setPosition(1);
             }
 
 
@@ -166,9 +142,9 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             hws.frontLeftPower = hws.y1 + hws.x2 + hws.x1;
             hws.backLeftPower = hws.y1 + hws.x2 - hws.x1;
             double frontRightPower  = y1 + x2 - x1;
-            double backRightPower   = y1 + x2 + x1;
+            double backRightPower   = -y1 - x2 - x1;
             double frontLeftPower   = y1 - x2 + x1;
-            double backLeftPower    = y1 - x2 - x1;
+            double backLeftPower    = -y1 + x2 + x1;
 
             // Normalize the values so neither exceed +/- 1.0
             hws.max = Math.max(Math.abs(hws.frontRightPower), Math.max(Math.abs(hws.backRightPower),
@@ -208,7 +184,7 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             telemetry.addData("front right:", frontRightPower);
             telemetry.addData("back right:", backRightPower);
             telemetry.addData("front left:", frontLeftPower);
-            telemetry.addData("back left:", backLeftPower);
+                telemetry.addData("back left:", backLeftPower);
             //telemetry.addData("Slider Holder: ", sliderHolderPosition);
             //telemetry.addData("Relic Holder: ", relicHoldPosition);    //
             //telemetry.addData("Relic Movement: ", relicMovementPosition);    //

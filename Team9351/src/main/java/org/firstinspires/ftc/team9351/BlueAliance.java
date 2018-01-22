@@ -27,17 +27,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.team7649;
+package org.firstinspires.ftc.team9351;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  *
@@ -66,22 +69,34 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name = "ROJOS", group = "Sensor")
-//@Disabled                            // Comment this out to add to the opmode list
-public class SensorAdafruitRGB extends LinearOpMode {
+@Autonomous(name = "Blue Alliance", group = "Sensor")
+@Disabled                            // Comment this out to add to the opmode list
+public class BlueAliance extends LinearOpMode {
 
   ColorSensor sensorRGB;
   DeviceInterfaceModule cdim;
-
-  float HSVblue = 200;
-
 
   // we assume that the LED pin of the RGB sensor is connected to
   // digital port 5 (zero indexed).
   static final int LED_CHANNEL = 5;
 
+  HardwareOmni         robot   = new HardwareOmni();   // Use a Pushbot's hardware
+  HardwareCosas cosas = new HardwareCosas();
+
+  private ElapsedTime runtime = new ElapsedTime();
+
+  static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: Andymark Motor Encoder
+  static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+  static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+  static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+          (WHEEL_DIAMETER_INCHES * 3.1415);
+  static final double     DRIVE_SPEED             = 0.6;
+  static final double     TURN_SPEED              = 0.5;
+
   @Override
   public void runOpMode() {
+    robot.init(hardwareMap);
+    cosas.init(hardwareMap);
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F,0F,0F};
@@ -115,6 +130,31 @@ public class SensorAdafruitRGB extends LinearOpMode {
     // turn the LED on in the beginning, just so user will know that the sensor is active.
     cdim.setDigitalChannelState(LED_CHANNEL, bLedOn);
 
+    robot.init(hardwareMap);
+
+    // Send telemetry message to signify robot waiting;
+    telemetry.addData("Status", "Resetting Encoders");    //
+    telemetry.update();
+
+    robot.frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    robot.frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    robot.backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    robot.backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+    robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    robot.backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    // Send telemetry message to indicate successful Encoder reset
+    telemetry.addData("Path0",  "Starting at FL:%7d FR:%7d BL:%7d BR:%7d",
+            robot.frontLeftDrive.getCurrentPosition(),
+            robot.frontRightDrive.getCurrentPosition(),
+            robot.backLeftDrive.getCurrentPosition(),
+            robot.backRightDrive.getCurrentPosition());
+
+    telemetry.update();
+
     // wait for the start button to be pressed.
     waitForStart();
 
@@ -122,6 +162,9 @@ public class SensorAdafruitRGB extends LinearOpMode {
     // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
     while (opModeIsActive())  {
 
+
+      telemetry.addData("Path", "Complete");
+      telemetry.update();
       // check the status of the x button on gamepad.
       bCurrState = gamepad1.x;
 
@@ -147,12 +190,6 @@ public class SensorAdafruitRGB extends LinearOpMode {
       telemetry.addData("Blue ", sensorRGB.blue());
       telemetry.addData("Hue", hsvValues[0]);
 
-      hsvValues[1] = 205;
-      hsvValues[2] = 02;
-
-      if (hsvValues[0] > hsvValues[2]){
-        telemetry.addData("Adios popo", hsvValues[0]);
-      }
 
       // change the background color to match the color detected by the RGB sensor.
       // pass a reference to the hue, saturation, and value array as an argument
@@ -163,6 +200,9 @@ public class SensorAdafruitRGB extends LinearOpMode {
         }
       });
 
+      if (sensorRGB.alpha() > 100){
+
+      }
       telemetry.update();
     }
 
@@ -172,5 +212,76 @@ public class SensorAdafruitRGB extends LinearOpMode {
         relativeLayout.setBackgroundColor(Color.WHITE);
       }
     });
+  }
+  public void encoderDrive(double speed,
+                           double frontLeftInches, double frontRightInches,
+                           double backLeftInches, double backRightInches,
+                           double timeoutS) {
+    int newFrontLeftTarget;
+    int newFrontRightTarget;
+    int newBackLeftTarget;
+    int newBackRightTarget;
+
+    // Ensure that the opmode is still active
+    if (opModeIsActive()) {
+
+      // Determine new target position, and pass to motor controller
+      newFrontLeftTarget = robot.frontLeftDrive.getCurrentPosition() + (int)(frontLeftInches * COUNTS_PER_INCH);
+      newFrontRightTarget = robot.frontRightDrive.getCurrentPosition() + (int)(frontRightInches * COUNTS_PER_INCH);
+      newBackLeftTarget = robot.backLeftDrive.getCurrentPosition() + (int)(backLeftInches * COUNTS_PER_INCH);
+      newBackRightTarget = robot.backRightDrive.getCurrentPosition() + (int)(backRightInches * COUNTS_PER_INCH);
+
+      robot.frontLeftDrive.setTargetPosition(newFrontLeftTarget);
+      robot.frontRightDrive.setTargetPosition(newFrontRightTarget);
+      robot.backLeftDrive.setTargetPosition(newBackLeftTarget);
+      robot.backRightDrive.setTargetPosition(newBackRightTarget);
+
+      // Turn On RUN_TO_POSITION
+      robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+      // reset the timeout time and start motion.
+      runtime.reset();
+      robot.frontLeftDrive.setPower(Math.abs(speed));
+      robot.frontRightDrive.setPower(Math.abs(speed));
+      robot.backLeftDrive.setPower(Math.abs(speed));
+      robot.backRightDrive.setPower(Math.abs(speed));
+
+      // keep looping while we are still active, and there is time left, and both motors are running.
+      // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+      // its target position, the motion will stop.  This is "safer" in the event that the robot will
+      // always end the motion as soon as possible.
+      // However, if you require that BOTH motors have finished their moves before the robot continues
+      // onto the next step, use (isBusy() || isBusy()) in the loop test.
+      while (opModeIsActive() &&
+              (runtime.seconds() < timeoutS) &&
+              (robot.frontLeftDrive.isBusy() && robot.frontRightDrive.isBusy() && robot.backLeftDrive.isBusy() && robot.backRightDrive.isBusy())) {
+
+        // Display it for the driver.
+        telemetry.addData("Path1",  "Running to FL:%7d FR:%7d BL:%7d BR:%7d", newFrontLeftTarget,  newFrontRightTarget, newBackLeftTarget, newBackRightTarget);
+        telemetry.addData("Path2",  "Running at FL:%7d FR:%7d BL:%7d BR: %7d",
+                robot.frontLeftDrive.getCurrentPosition(),
+                robot.frontRightDrive.getCurrentPosition(),
+                robot.backLeftDrive.getCurrentPosition(),
+                robot.backRightDrive.getCurrentPosition());
+        telemetry.update();
+      }
+
+      // Stop all motion;
+      robot.frontLeftDrive.setPower(0);
+      robot.frontRightDrive.setPower(0);
+      robot.backLeftDrive.setPower(0);
+      robot.backRightDrive.setPower(0);
+
+      // Turn off RUN_TO_POSITION
+      robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      robot.backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+      //  sleep(250);   // optional pause after each move
+    }
   }
 }
