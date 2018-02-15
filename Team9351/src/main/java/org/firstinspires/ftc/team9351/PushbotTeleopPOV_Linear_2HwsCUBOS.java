@@ -108,32 +108,6 @@ public class PushbotTeleopPOV_Linear_2HwsCUBOS extends LinearOpMode {
                 hwCos.jewel.setPosition(1);
             }
 
-            if (gamepad2.x){
-                hwCos.rightArm.setPosition(1);
-                hwCos.leftArm.setPosition(0);
-            } else if (gamepad2.b){
-                hwCos.rightArm.setPosition(.27);
-                hwCos.leftArm.setPosition(.72);
-            }
-
-            if (gamepad2.y){
-                hwCos.sliderHolder.setPosition(0);
-            } else if (gamepad2.a){
-                hwCos.sliderHolder.setPosition(1);
-            }
-
-            if (gamepad2.right_bumper){
-                hwCos.relicMov.setPosition(0);
-            } else if (gamepad2.left_bumper){
-                hwCos.relicMov.setPosition(1);
-            }
-
-            if (gamepad2.right_stick_button){
-                hwCos.relicHold.setPosition(0);
-            } else if (gamepad2.left_stick_button){
-                hwCos.relicHold.setPosition(1);
-            }
-
 
             if (gamepad1.right_bumper)
             {

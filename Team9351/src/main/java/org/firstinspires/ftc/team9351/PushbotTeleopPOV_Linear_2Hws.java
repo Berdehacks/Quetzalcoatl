@@ -85,8 +85,6 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             int cero = 0;
             int cienochenta = 180;
 
-            hwCos.rightArm.setPosition(.5);
-            hwCos.leftArm.setPosition(.5);
 
             if (gamepad1.x){
                 hwCos.elevadorCubos.setPower(.5);
@@ -103,11 +101,11 @@ public class PushbotTeleopPOV_Linear_2Hws extends LinearOpMode {
             }
 
             if (gamepad2.x){
-                hwCos.rightArm.setPosition(1);
-                hwCos.leftArm.setPosition(0);
+                hwCos.CA.setPower(1);
             } else if (gamepad2.b){
-                hwCos.rightArm.setPosition(.27);
-                hwCos.leftArm.setPosition(.72);
+                hwCos.CA.setPower(-1);
+            } else {
+                hwCos.CA.setPower(0);
             }
 
 

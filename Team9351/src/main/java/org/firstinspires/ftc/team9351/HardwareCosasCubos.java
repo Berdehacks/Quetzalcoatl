@@ -54,9 +54,7 @@ public class HardwareCosasCubos {
     /* Public OpMode members. */
     public DcMotor elevadorCubos = null;
     public Servo jewel = null;
-    public Servo rightArm = null;
-    public Servo leftArm = null;
-
+    public DcMotor CA = null;
 
     public static final double MID_SERVO       =  0.5 ;
     public static final double ARM_UP_POWER    =  0.45 ;
@@ -77,24 +75,22 @@ public class HardwareCosasCubos {
 
         // Define and Initialize Motors
         elevadorCubos = hwMap.get(DcMotor.class, "CE");
+        CA = hwMap.get(DcMotor.class, "CA");
 
         elevadorCubos.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        CA.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
 
         // Set all motors to zero power
         elevadorCubos.setPower(0);
+        CA.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         elevadorCubos.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         jewel = hwMap.get(Servo.class, "JW");
-        rightArm = hwMap.get(Servo.class, "RA");
-        leftArm = hwMap.get(Servo.class, "LA");
 
         jewel.setPosition(1);
-        rightArm.setPosition(0);
-        leftArm.setPosition(1);
-
     }
 }
 
